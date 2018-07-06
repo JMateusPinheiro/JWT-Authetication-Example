@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
 @SpringBootApplication
-public class JwtAutheticationApplication {
+public class JwtAuthenticationApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(JwtAutheticationApplication.class, args);
+        SpringApplication.run(JwtAuthenticationApplication.class, args);
     }
 
     @SuppressWarnings("deprecation")

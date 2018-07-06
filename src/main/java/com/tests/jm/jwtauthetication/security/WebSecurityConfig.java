@@ -1,4 +1,4 @@
-package com.tests.jm.jwtauthetication;
+package com.tests.jm.jwtauthetication.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,26 +15,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable().authorizeRequests()
-			.antMatchers("/home").permitAll()
+			.antMatchers(HttpMethod.GET, "/").permitAll()
 			.antMatchers(HttpMethod.POST, "/login").permitAll()
 			.anyRequest().authenticated()
 			.and()
 			
-			// filtra requisições de login
+			// filter requests to login
 			.addFilterBefore(new JWTLoginFilter("/login", authenticationManager()),
 	                UsernamePasswordAuthenticationFilter.class)
 			
-			// filtra outras requisições para verificar a presença do JWT no header
+			// filter others requests for verify if exists JWT in header
 			.addFilterBefore(new JWTAuthenticationFilter(),
 	                UsernamePasswordAuthenticationFilter.class);
 	}
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		// cria uma conta default
+		// create in memory account
 		auth.inMemoryAuthentication()
-			.withUser("admin")
-			.password("password")
-			.roles("ADMIN");
+                .withUser("admin")
+                .password("pass")
+                .roles("ADMIN");
+
+		auth.inMemoryAuthentication()
+				.withUser("user")
+				.password("pass")
+				.roles("USER");
 	}
 }
