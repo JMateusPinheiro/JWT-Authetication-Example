@@ -14,6 +14,10 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.servlet.Filter;
+
+import static com.tests.jm.jwtauthetication.utils.Contants.ROLE_ADMIN;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -30,6 +34,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    @Bean
+    public Filter authenticationFilter() {
+        return new JWTAuthenticationFilter(jwtTokenCodec());
+    }
+
+    @Bean
+    public JwtTokenCodec jwtTokenCodec() {
+        return new JwtTokenCodec();
+    }
+
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf().disable().authorizeRequests()
@@ -38,12 +52,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.anyRequest().authenticated()
 			.and()
 			
-			// filter requests to login
-			.addFilterBefore(new JWTLoginFilter("/login", authenticationManager()),
-	                UsernamePasswordAuthenticationFilter.class)
-			
 			// filter others requests for verify if exists JWT in header
-			.addFilterBefore(new JWTAuthenticationFilter(),
+			.addFilterBefore(authenticationFilter(),
 	                UsernamePasswordAuthenticationFilter.class);
 	}
 	
@@ -54,7 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder())
                 .withUser("admin")
                 .password(passwordEncoder().encode("pass"))
-                .roles("ADMIN");
+                .authorities(ROLE_ADMIN);
 
 		auth.inMemoryAuthentication()
                 .passwordEncoder(passwordEncoder())
