@@ -14,8 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.logging.Logger;
 
 public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
+    private final Logger LOGGER = Logger.getLogger(this.getClass().getName());
 
 	JWTLoginFilter(String url, AuthenticationManager authManager) {
 		super(new AntPathRequestMatcher(url));
@@ -28,7 +30,9 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 		
 		AccountCredentials credentials = new ObjectMapper()
 				.readValue(request.getInputStream(), AccountCredentials.class);
-		
+
+		LOGGER.info("CREDENTIALS >> " + credentials.toString());
+
 		return getAuthenticationManager().authenticate(
 				new UsernamePasswordAuthenticationToken(
 						credentials.getUsername(), 
@@ -44,6 +48,8 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 			HttpServletResponse response,
 			FilterChain filterChain,
 			Authentication auth) {
+
+	    LOGGER.info("SUCCESS >> " + auth.getName() + " >> " + auth.getAuthorities());
 
 		TokenAuthenticationService.addAuthentication(response, auth.getName());
 	}
