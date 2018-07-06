@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.servlet.Filter;
 
-import static com.tests.jm.jwtauthetication.utils.Contants.ROLE_ADMIN;
+import static com.tests.jm.jwtauthetication.utils.Constants.ROLE_ADMIN;
 
 @Configuration
 @EnableWebSecurity

@@ -16,8 +16,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-import static com.tests.jm.jwtauthetication.utils.Contants.HEADER_STRING;
-import static com.tests.jm.jwtauthetication.utils.Contants.TOKEN_PREFIX;
+import static com.tests.jm.jwtauthetication.utils.Constants.HEADER_STRING;
+import static com.tests.jm.jwtauthetication.utils.Constants.TOKEN_PREFIX;
 
 @Component
 public class JWTAuthenticationFilter extends GenericFilterBean {

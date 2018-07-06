@@ -1,6 +1,6 @@
 package com.tests.jm.jwtauthetication.utils;
 
-public class Contants {
+public class Constants {
 
     // EXPIRATION_TIME = 10 dias
     public static final long EXPIRATION_TIME = 860_000_000;

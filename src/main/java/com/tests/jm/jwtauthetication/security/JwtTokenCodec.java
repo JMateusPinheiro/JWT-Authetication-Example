@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-import static com.tests.jm.jwtauthetication.utils.Contants.EXPIRATION_TIME;
-import static com.tests.jm.jwtauthetication.utils.Contants.SECRET;
+import static com.tests.jm.jwtauthetication.utils.Constants.EXPIRATION_TIME;
+import static com.tests.jm.jwtauthetication.utils.Constants.SECRET;
 
 @Component
 public class JwtTokenCodec {

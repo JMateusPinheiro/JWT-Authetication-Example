@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.ToString;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import static com.tests.jm.jwtauthetication.utils.Contants.ROLE_USER;
+import static com.tests.jm.jwtauthetication.utils.Constants.ROLE_USER;
 
 @Data
 @Builder
