@@ -1,0 +1,6 @@
+logging:
+  level:
+    org:
+      springframework:
+        web: debug
+  file: /var/log/jwt-example.log
