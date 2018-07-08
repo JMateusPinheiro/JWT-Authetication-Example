@@ -28,16 +28,24 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
         this.jwtTokenCodec = jwtTokenCodec;
     }
 
+    // PROBLEM, work without bearer type
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         final HttpServletRequest httpRequest = (HttpServletRequest) request;
+
         final String header = httpRequest.getHeader(HEADER_STRING);
+
         final SecurityContext context = SecurityContextHolder.getContext();
+
         if (header != null && context.getAuthentication() == null) {
+
             final String tokenStr = header.substring(TOKEN_PREFIX.length());
+
             final JwtToken token = jwtTokenCodec.decodeToken(tokenStr);
-            if (!token.isExpired()) {
+
+            if (header.contains(TOKEN_PREFIX) && !token.isExpired()) {
                 final PreAuthenticatedAuthenticationToken authentication =
                         new PreAuthenticatedAuthenticationToken(token, "n/a", token.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));

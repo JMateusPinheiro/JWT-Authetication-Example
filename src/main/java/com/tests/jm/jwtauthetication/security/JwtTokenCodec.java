@@ -32,4 +32,8 @@ public class JwtTokenCodec {
                 .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
     }
+
+    public Date getExpirationDate(String token) {
+        return decodeToken(token).expirationDate();
+    }
 }

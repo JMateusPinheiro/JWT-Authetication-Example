@@ -1,10 +1,12 @@
 package com.tests.jm.jwtauthetication.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
 import static com.tests.jm.jwtauthetication.utils.Constants.ROLE_USER;
 
 @Data
@@ -12,7 +14,10 @@ import static com.tests.jm.jwtauthetication.utils.Constants.ROLE_USER;
 @ToString
 public class AccountCredentials {
 	private String username;
+
+	@JsonProperty(access = WRITE_ONLY)
 	private String password;
+
 	private String role;
 
 	// Exist in this moment only 1 role

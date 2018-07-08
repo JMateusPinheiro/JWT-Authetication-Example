@@ -32,6 +32,10 @@ public class JwtToken {
         return claims.getExpiration().before(new Date());
     }
 
+    public Date expirationDate() {
+        return claims.getExpiration();
+    }
+
     public String getRole() {
         return claims.get(Key.ROLE, String.class);
     }

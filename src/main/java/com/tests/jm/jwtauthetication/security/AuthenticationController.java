@@ -1,27 +1,23 @@
 package com.tests.jm.jwtauthetication.security;
 
 
-import com.tests.jm.jwtauthetication.dto.AccountCredentials;
-import com.tests.jm.jwtauthetication.dto.AuthenticationRequest;
-import com.tests.jm.jwtauthetication.dto.AuthenticationResponse;
-import com.tests.jm.jwtauthetication.dto.JwtToken;
+import com.tests.jm.jwtauthetication.dto.*;
+import com.tests.jm.jwtauthetication.dto.Error;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.logging.Logger;
 
+import static com.tests.jm.jwtauthetication.utils.Constants.TOKEN_PREFIX;
+
 @RestController
-@RequestMapping("/login")
 public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenCodec jwtTokenCodec;
@@ -33,10 +29,8 @@ public class AuthenticationController {
         this.jwtTokenCodec = jwtTokenCodec;
     }
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) throws AuthenticationException {
-
-        LOGGER.info("LOGIN >> " + authenticationRequest.toString());
 
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -44,12 +38,58 @@ public class AuthenticationController {
                         authenticationRequest.getPassword()
                 ));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        final AccountCredentials userDetails = AccountCredentials.ofPrincipal((UserDetails) authentication.getPrincipal());
+        final AccountCredentials accountCredentials = AccountCredentials.ofPrincipal((UserDetails) authentication.getPrincipal());
 
-        final String token = jwtTokenCodec.encodeToken(JwtToken.ofAccount(userDetails));
+        final JwtToken jwtToken = JwtToken.ofAccount(accountCredentials);
 
-        return ResponseEntity.ok(new AuthenticationResponse(token, "REFRESH_TOKEN_NOT_IMPLEMENTED", userDetails));
+        final String token = jwtTokenCodec.encodeToken(jwtToken);
+
+        final Date expirationDate = jwtToken.expirationDate();
+
+        return ResponseEntity.ok(new AuthenticationResponse(token, expirationDate, accountCredentials));
+    }
+
+    @GetMapping("/auth/token")
+    public ResponseEntity token(@RequestHeader("Authorization") String token) {
+        if (!token.contains(TOKEN_PREFIX))
+            return ResponseEntity.badRequest().body(Error.builder().field(token).message("Token invalid"));
+
+        String tokenStr = token.substring(TOKEN_PREFIX.length());
+        JwtToken jwtToken = jwtTokenCodec.decodeToken(tokenStr);
+
+        if (jwtToken.isExpired())
+            return ResponseEntity.badRequest().body(Error.builder().field(token).message("Token has expired"));
+
+        final Date expirationDate = jwtToken.expirationDate();
+
+        return ResponseEntity.ok(
+                new AuthenticationResponse(
+                        tokenStr,
+                        expirationDate,
+                        null
+                )
+        );
+    }
+
+    @PostMapping("/auth/refresh-token")
+    public ResponseEntity refreshToken(@RequestHeader("Authorization") String token) {
+        if (!token.contains(TOKEN_PREFIX))
+            return ResponseEntity.badRequest().body(Error.builder().field(token).message("Token invalid"));
+
+        String tokenStr = token.substring(TOKEN_PREFIX.length());
+        JwtToken jwtToken = jwtTokenCodec.decodeToken(tokenStr);
+
+        final String refreshedToken = jwtTokenCodec.encodeToken(jwtToken);
+
+        final Date expirationDate = jwtTokenCodec.getExpirationDate(refreshedToken);
+
+        return ResponseEntity.ok(
+                new AuthenticationResponse(
+                        refreshedToken,
+                        expirationDate,
+                        null
+                )
+        );
     }
 }
