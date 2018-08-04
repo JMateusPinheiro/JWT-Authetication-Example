@@ -9,7 +9,6 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,15 +26,15 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 			throws AuthenticationException, IOException {
 		
 		AccountCredentials credentials = new ObjectMapper()
-				.readValue(request.getInputStream(), AccountCredentials.class);
+                .readValue(request.getInputStream(), AccountCredentials.class);
 		
-		return getAuthenticationManager().authenticate(
-				new UsernamePasswordAuthenticationToken(
-						credentials.getUsername(), 
-						credentials.getPassword(), 
-						Collections.emptyList()
-						)
-				);
+		return getAuthenticationManager()
+                .authenticate(new UsernamePasswordAuthenticationToken(
+                        credentials.getUsername(),
+                        credentials.getPassword(),
+                        Collections.emptyList()
+                )
+        );
 	}
 	
 	@Override
@@ -43,7 +42,8 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 			HttpServletRequest request, 
 			HttpServletResponse response,
 			FilterChain filterChain,
-			Authentication auth) throws IOException {
+			Authentication auth) {
+
 		TokenAuthenticationService.addAuthentication(response, auth.getName());
 	}
 

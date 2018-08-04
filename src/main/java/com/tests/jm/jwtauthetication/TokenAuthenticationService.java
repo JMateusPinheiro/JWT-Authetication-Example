@@ -9,13 +9,17 @@ import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
 import java.util.Date;
 
 public class TokenAuthenticationService {
 	private static final Logger LOGGER = LoggerFactory.getLogger("TokenAuthenticationService");
+	private final UserService userService;
 
-	// EXPIRATION_TIME = 10 dias
+    public TokenAuthenticationService(UserService userService) {
+        this.userService = userService;
+    }
+
+    // EXPIRATION_TIME = 10 dias
 	static final long EXPIRATION_TIME = 860_000_000;
 	static final String SECRET = "MySecret";
 	static final String TOKEN_PREFIX = "Bearer";
@@ -28,12 +32,12 @@ public class TokenAuthenticationService {
 				.signWith(SignatureAlgorithm.HS512, SECRET)
 				.compact();
 
-		LOGGER.info(JWT);
+		LOGGER.info("JWT ==>" + JWT);
 
 		response.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + JWT);
 	}
 	
-	static Authentication getAuthentication(HttpServletRequest request) {
+	public Authentication getAuthentication(HttpServletRequest request) {
 		String token = request.getHeader(HEADER_STRING);
 		
 		if (token != null) {
@@ -43,9 +47,15 @@ public class TokenAuthenticationService {
 					.parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
 					.getBody()
 					.getSubject();
-			
+
+			LOGGER.info("USER ==> " + user);
+
 			if (user != null) {
-				return new UsernamePasswordAuthenticationToken(user, null, Collections.emptyList());
+				return new UsernamePasswordAuthenticationToken(
+				        user,
+                        null,
+                        userService.getAuthoritiesFrom(user)
+                );
 			}
 		}
 		return null;
