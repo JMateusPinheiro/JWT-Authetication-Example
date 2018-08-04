@@ -1,4 +1,4 @@
-package com.tests.jm.jwtauthetication;
+package com.tests.jm.jwtauthetication.services;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

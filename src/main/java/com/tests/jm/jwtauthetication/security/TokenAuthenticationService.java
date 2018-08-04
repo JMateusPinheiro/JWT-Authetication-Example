@@ -1,5 +1,6 @@
-package com.tests.jm.jwtauthetication;
+package com.tests.jm.jwtauthetication.security;
 
+import com.tests.jm.jwtauthetication.services.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
@@ -15,7 +16,7 @@ public class TokenAuthenticationService {
 	private static final Logger LOGGER = LoggerFactory.getLogger("TokenAuthenticationService");
 	private final UserService userService;
 
-    public TokenAuthenticationService(UserService userService) {
+    TokenAuthenticationService(UserService userService) {
         this.userService = userService;
     }
 
@@ -32,12 +33,12 @@ public class TokenAuthenticationService {
 				.signWith(SignatureAlgorithm.HS512, SECRET)
 				.compact();
 
-		LOGGER.info("JWT ==>" + JWT);
+		LOGGER.info("JWT ==> " + JWT);
 
 		response.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + JWT);
 	}
 	
-	public Authentication getAuthentication(HttpServletRequest request) {
+	Authentication getAuthentication(HttpServletRequest request) {
 		String token = request.getHeader(HEADER_STRING);
 		
 		if (token != null) {

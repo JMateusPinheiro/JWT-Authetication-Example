@@ -1,5 +1,6 @@
-package com.tests.jm.jwtauthetication;
+package com.tests.jm.jwtauthetication.security;
 
+import com.tests.jm.jwtauthetication.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

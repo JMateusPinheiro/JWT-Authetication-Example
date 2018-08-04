@@ -1,4 +1,4 @@
-package com.tests.jm.jwtauthetication;
+package com.tests.jm.jwtauthetication.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
