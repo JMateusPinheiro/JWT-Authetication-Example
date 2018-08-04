@@ -2,6 +2,8 @@ package com.tests.jm.jwtauthetication;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
@@ -11,7 +13,8 @@ import java.util.Collections;
 import java.util.Date;
 
 public class TokenAuthenticationService {
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger("TokenAuthenticationService");
+
 	// EXPIRATION_TIME = 10 dias
 	static final long EXPIRATION_TIME = 860_000_000;
 	static final String SECRET = "MySecret";
@@ -24,7 +27,9 @@ public class TokenAuthenticationService {
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.signWith(SignatureAlgorithm.HS512, SECRET)
 				.compact();
-		System.out.println(JWT);
+
+		LOGGER.info(JWT);
+
 		response.addHeader(HEADER_STRING, TOKEN_PREFIX + " " + JWT);
 	}
 	

@@ -17,14 +17,14 @@ import java.util.Collections;
 
 public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-	protected JWTLoginFilter(String url, AuthenticationManager authManager) {
+	JWTLoginFilter(String url, AuthenticationManager authManager) {
 		super(new AntPathRequestMatcher(url));
 		setAuthenticationManager(authManager);
 	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException, IOException, ServletException {
+			throws AuthenticationException, IOException {
 		
 		AccountCredentials credentials = new ObjectMapper()
 				.readValue(request.getInputStream(), AccountCredentials.class);
@@ -43,7 +43,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 			HttpServletRequest request, 
 			HttpServletResponse response,
 			FilterChain filterChain,
-			Authentication auth) throws IOException, ServletException {
+			Authentication auth) throws IOException {
 		TokenAuthenticationService.addAuthentication(response, auth.getName());
 	}
 
